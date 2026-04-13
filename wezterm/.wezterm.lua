@@ -14,4 +14,5 @@ return {
 	window_decorations = "RESIZE",
 	adjust_window_size_when_changing_font_size = false,
 	enable_csi_u_key_encoding = true,
+	window_background_opacity = 0.8,
 }
