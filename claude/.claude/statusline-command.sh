@@ -18,6 +18,8 @@ ctx_input_tokens=$(echo "$input" | jq -r '
   else empty end')
 ctx_window_size=$(echo "$input" | jq -r '.context_window.context_window_size // empty')
 
+total_cost_usd=$(echo "$input" | jq -r '.cost.total_cost_usd // empty')
+
 five_hour=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
 five_hour_resets=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
 seven_day=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
@@ -144,6 +146,12 @@ if [ -n "$seven_day" ]; then
 	fi
 fi
 
+# Session cost
+if [ -n "$total_cost_usd" ]; then
+	cost_fmt=$(awk "BEGIN { printf \"%.2f\", $total_cost_usd }")
+	parts+=("$(printf "${yellow}\$%s${reset}" "$cost_fmt")")
+fi
+
 # Vim mode
 if [ -n "$vim_mode" ]; then
 	case "$vim_mode" in
@@ -160,7 +168,7 @@ for part in "${parts[@]}"; do
 	if [ -z "$line" ]; then
 		line="$part"
 	else
-		line="$line $(print '..%s..' "$sep") $part"
+		line="$line $(printf '%b' "$sep") $part"
 	fi
 done
 
