@@ -1,0 +1,7 @@
+backups/
+cache/
+plans/
+projects/
+sessions/
+
+history.jsonl
