@@ -1,7 +1,9 @@
 backups/
 cache/
 file-history/
+paste-cache/
 plans/
+plugins/
 projects/
 session-env/
 sessions/
