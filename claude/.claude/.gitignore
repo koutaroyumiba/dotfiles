@@ -8,5 +8,9 @@ projects/
 session-env/
 sessions/
 shell-snapshots/
+telemetry/
+downloads/
 
 history.jsonl
+.last-cleanup
+.last-update-result.json

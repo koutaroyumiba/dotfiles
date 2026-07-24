@@ -4,6 +4,9 @@
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
   },
+  "enabledPlugins": {
+    "caveman@caveman": true
+  },
   "extraKnownMarketplaces": {
     "caveman": {
       "source": {
@@ -13,7 +16,6 @@
     }
   },
   "effortLevel": "medium",
-  "enabledPlugins": {
-    "caveman@caveman": true
-  }
+  "tui": "fullscreen",
+  "editorMode": "normal"
 }
