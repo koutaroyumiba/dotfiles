@@ -17,5 +17,6 @@
   },
   "effortLevel": "medium",
   "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
   "editorMode": "normal"
 }

@@ -10,6 +10,7 @@ sessions/
 shell-snapshots/
 telemetry/
 downloads/
+tasks/
 
 history.jsonl
 .last-cleanup
