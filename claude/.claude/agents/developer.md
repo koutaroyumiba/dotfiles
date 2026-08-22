@@ -1,7 +1,7 @@
 ---
 name: developer
 description: Implements your specs with tests - delegate for writing code
-model: inherit
+model: sonnet
 color: blue
 ---
 

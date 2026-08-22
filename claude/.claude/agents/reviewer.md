@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Use this agent when you need to conduct unbiased, comprehensive quality reviews and return actionable recommendations on code/plan quality, security vulnerabilities, and best practices.
-model: inherit
+model: sonnet
 color: orange
 ---
 # Expert Quality Reviewer Agent

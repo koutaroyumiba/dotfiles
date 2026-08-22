@@ -18,5 +18,8 @@
   "effortLevel": "medium",
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "editorMode": "normal"
+  "editorMode": "normal",
+  "permissions": {
+    "defaultMode": "auto"
+  }
 }
