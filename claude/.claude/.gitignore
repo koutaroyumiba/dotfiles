@@ -1,6 +1,8 @@
 backups/
 cache/
+daemon/
 file-history/
+jobs/
 paste-cache/
 plans/
 plugins/
@@ -8,10 +10,14 @@ projects/
 session-env/
 sessions/
 shell-snapshots/
+statusline-state/
 telemetry/
 downloads/
 tasks/
 
 history.jsonl
+daemon.lock
+daemon.log
+daemon.status.json
 .last-cleanup
 .last-update-result.json
