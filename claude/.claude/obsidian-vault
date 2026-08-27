@@ -1,0 +1,20 @@
+# Absolute path to your Obsidian vault (the dir containing .obsidian/).
+# Used by the vault, vaultq and vaultw skills. One path per line;
+# first non-comment line is the default vault. ~ is expanded.
+# Override for one session with: export OBSIDIAN_VAULT=/path/to/vault
+
+~/workspace/knowledge/
+
+# --- Shared settings for the vault skills. Keyed lines; key: value. ---
+# Folder new notes are written into, relative to the vault root.
+write-dir: 003 AI Inbox
+# Template used when the request does not name one.
+template: ai
+# Template name -> path, vault-relative. Add your own lines here;
+# the name is what you say in the request.
+template.ai: Templates/AI Template.md
+template.default: Templates/Default Template.md
+template.paper: Templates/Academic Paper Template.md
+template.course: Templates/Course Note Template.md
+template.book: Templates/Book Template.md
+template.daily: Templates/Daily Note Template.md
