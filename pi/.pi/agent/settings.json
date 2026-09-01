@@ -1,0 +1,9 @@
+{
+  "lastChangelogVersion": "0.84.4",
+  "theme": "rose-pine",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "enableSkillCommands": true,
+  "externalEditor": "nvim",
+  "defaultTools": ["read", "grep", "find", "ls"]
+}
