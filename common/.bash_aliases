@@ -16,4 +16,5 @@ alias glols="git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgr
 
 # optionals
 alias task="nvim $HOME/workspace/knowledge/todo.md"
+alias sb="cd $HOME/workspace/knowledge"
 alias csp="claude --dangerously-skip-permissions"
