@@ -1,11 +1,14 @@
 {
+  "permissions": {
+    "defaultMode": "auto"
+  },
   "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "caveman@caveman": true
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -13,13 +16,16 @@
         "source": "github",
         "repo": "JuliusBrussee/caveman"
       }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
     }
   },
   "effortLevel": "medium",
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "editorMode": "normal",
-  "permissions": {
-    "defaultMode": "auto"
-  }
+  "editorMode": "normal"
 }
