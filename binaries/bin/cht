@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/cht"
+CACHE_TTL_MINUTES=1440
+
+for command in curl fzf less; do
+	if ! command -v "$command" >/dev/null 2>&1; then
+		echo "cht: required command not found: $command" >&2
+		exit 1
+	fi
+done
+
+mkdir -p "$CACHE_DIR/topics" || exit 1
+
+cached_curl() {
+	local url=$1
+	local cache_file=$2
+	local temp_file
+
+	if [[ -f "$cache_file" ]] && find "$cache_file" -mmin "-$CACHE_TTL_MINUTES" -print -quit | grep -q .; then
+		cat "$cache_file"
+		return
+	fi
+
+	temp_file=$(mktemp "${cache_file}.XXXXXX") || return 1
+	if curl --fail --silent --show-error "$url" -o "$temp_file"; then
+		mv "$temp_file" "$cache_file"
+		cat "$cache_file"
+	else
+		rm -f "$temp_file"
+		if [[ -f "$cache_file" ]]; then
+			echo "cht: using stale cache because the refresh failed" >&2
+			cat "$cache_file"
+		else
+			return 1
+		fi
+	fi
+}
+
+topic=$(cached_curl https://cht.sh/:list "$CACHE_DIR/topics.list" | fzf --prompt='Topic > ') || exit $?
+[[ -n "$topic" ]] || exit 0
+
+cache_key=${topic%/}
+cache_key=${cache_key//[^[:alnum:]._-]/_}
+subtopics=$(cached_curl "https://cht.sh/${topic%/}/:list" "$CACHE_DIR/topics/$cache_key.list") || exit $?
+
+if [[ -z "$subtopics" ]]; then
+	curl --fail --silent --show-error "https://cht.sh/${topic%/}" | less -R
+	exit $?
+fi
+
+subtopic=$(printf '%s\n' "$subtopics" | fzf --prompt="$topic > ") || exit $?
+[[ -n "$subtopic" ]] || exit 0
+
+curl --fail --silent --show-error "https://cht.sh/${topic%/}/${subtopic#/}" | less -R
