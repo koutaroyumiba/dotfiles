@@ -1,0 +1,5 @@
+# copy selected lines to ~/.bash_aliases_local
+# the real local file is intentionally not managed by this repository
+
+alias task="nvim $HOME/workspace/knowledge/todo.md"
+alias sb="cd $HOME/workspace/knowledge"

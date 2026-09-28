@@ -1,7 +1,19 @@
-# for my binaries
+# this file is sourced by both Bash and Zsh
+# syntax should be compatible with both shells
+# check with:
+#   bash -n ./bashrc
+#   zsh -n ./bashrc
+
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
-if [ -f "$HOME/.bash_aliases" ]; then
-	. "$HOME/.bash_aliases"
+if [ -d "$HOME/.opencode/bin" ]; then
+  export PATH="$HOME/.opencode/bin:$PATH"
+fi
+
+[ -f "$HOME/.bash_aliases" ] && . "$HOME/.bash_aliases"
+[ -f "$HOME/.bash_aliases_local" ] && . "$HOME/.bash_aliases_local"
+
+if [ -n "${BASH_VERSION:-}" ] && command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate bash)"
 fi

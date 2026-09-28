@@ -1,0 +1,14 @@
+export ZSH="$HOME/.oh-my-zsh"
+# this can be set to random hehe
+ZSH_THEME="robbyrussell"
+plugins=(git)
+
+if [ -r "$ZSH/oh-my-zsh.sh" ]; then
+  source "$ZSH/oh-my-zsh.sh"
+fi
+
+[ -f "$HOME/.bashrc" ] && source "$HOME/.bashrc"
+
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+fi

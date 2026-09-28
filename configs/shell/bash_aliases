@@ -1,10 +1,13 @@
-#!/bin/sh
+# this file should be sourced, not executed
 
-# necessary
 alias v="nvim ."
-# replace gls with ls on linux
-# requires coreutils on mac (brew install coreutils)
-alias ls="gls -lAh --color --group-directories-first"
+
+if command -v gls >/dev/null 2>&1; then
+  # requires coreutils on mac
+  alias ls="gls -lAh --color --group-directories-first"
+else
+  alias ls="ls -lAhG"
+fi
 
 # git commands
 alias gs="git status --short"
@@ -13,8 +16,3 @@ alias gl="git log --oneline --graph --parents --all --pretty='%Cred%h%Creset -%C
 alias gnl="git --no-pager log --oneline --graph --parents --all --max-count=20 --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset' --date=short"
 alias gcat="git cat-file -p"
 alias glols="git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset' --stat"
-
-# optionals
-alias task="nvim $HOME/workspace/knowledge/todo.md"
-alias sb="cd $HOME/workspace/knowledge"
-alias csp="claude --dangerously-skip-permissions"
