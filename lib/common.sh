@@ -28,7 +28,7 @@ confirm() {
 }
 
 print_command() {
-  printf "  $"
+  printf "[DRY_RUN] $"
   printf " %q" "$@"
   printf "\n"
 }
