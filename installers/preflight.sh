@@ -18,7 +18,6 @@ esac
 
 run mkdir -p "$HOME/.config"
 run mkdir -p "$HOME/.local/bin"
-run mkdir -p "$HOME/bin"
 run mkdir -p "$HOME/workspace"
 
 if ! xcode-select -p >/dev/null 2>&1; then
