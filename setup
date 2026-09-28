@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+DOTFILES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+export DOTFILES_DIR
+export DRY_RUN=0
+export ASSUME_YES=0
+
+# shellcheck source=lib/common.sh
+source "$DOTFILES_DIR/lib/common.sh"
+
+only_steps=""
+skipped_steps=""
+
+# installers list here (in the order of execution ORDER MATTERS)
+INSTALLERS=(
+  preflight
+  homebrew
+  packages
+  submodules
+  links
+  shell
+  node
+  tmux
+  macos
+  verify
+)
+
+usage() {
+  cat <<"USAGE"
+Usage: ./setup [options]
+
+Options:
+  --dry-run       Print changes without applying them
+  --list          List available setup steps
+  --only a,b      Run only the named steps
+  --skip a,b      Skip the named steps
+  --yes           Accept ordinary confirmation prompts
+  --help          Show this help
+USAGE
+}
+
+# csv_contains [csv_list] [value]
+csv_contains() {
+  local csv_list="$1"
+  local expected="$2"
+  local item
+  local old_sep="$IFS"
+
+  IFS=","
+  for item in $csv_list; do
+    if [[ "$item" == "$expected" ]]; then
+      IFS="$old_sep"
+      return 0
+    fi
+  done
+  IFS="$old_sep"
+  return 1
+}
+
+list_steps() {
+  printf "%s\n" "${INSTALLERS[@]}"
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)
+      DRY_RUN=1
+      export DRY_RUN
+      ;;
+    --list|-l)
+      list_steps
+      exit 0
+      ;;
+    --only)
+      [[ $# -ge 2 ]] || fail "--only requires a comma-separated value"
+      only_steps="$2"
+      # shift consumes the argument (shift all arguments by one)
+      shift
+      ;;
+    --skip)
+      [[ $# -ge 2 ]] || fail "--skip requires a comma-separated value"
+      skipped_steps="$2"
+      shift
+      ;;
+    --yes|-y)
+      ASSUME_YES=1
+      export ASSUME_YES
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    *)
+      fail "Unknown option: $1"
+      ;;
+  esac
+  shift
+done
+
+info "Dotfiles directory: $DOTFILES_DIR"
+[[ "$DRY_RUN" == "1" ]] && warn "Dry-run mode is enabled"
+
+ran=0
+skipped=0
+
+for name in "${INSTALLERS[@]}"; do
+  installer="$DOTFILES_DIR/installers/$name.sh"
+  [[ -f "$installer" ]] || fail "Installer not found: $installer"
+
+  if [[ -n "$only_steps" ]] && ! csv_contains "$only_steps" "$name"; then
+    ((skipped += 1))
+    continue
+  fi
+
+  if [[ -n "$skipped_steps" ]] && csv_contains "$skipped_steps" "$name"; then
+    info  "Skipping: $name"
+    ((skipped += 1))
+    continue
+  fi
+
+  printf "\n"
+  info "Running step: $name"
+  bash "$installer"
+  success "Completed step: $name"
+  ((ran += 1))
+done
+
+printf "\n"
+success "Setup finished: $ran step(s) ran, $skipped step(s) skipped."
