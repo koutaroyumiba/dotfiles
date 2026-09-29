@@ -2,6 +2,22 @@
 
 A repeatable macOS (sorry, only macOS for now) bootstrap for my shell, dev tools, apps, runtimes and config files.
 
+## Overview
+
+The target setup at a glance:
+
+- **Browser:** Helium
+- **Launcher:** Raycast
+- **Window manager:** Aerospace
+- **Terminal:** WezTerm
+- **Shell:** Zsh (with Oh My Zsh)
+- **Multiplexer:** tmux
+- **Editor:** Neovim
+- **Package manager:** Homebrew
+- **Runtime manager:** mise
+- **Font:** Iosevka Term Nerd Font
+- **System monitors:** btop, fastfetch
+
 ## Supported platform
 
 Current version supports macOS on Apple Silicon and Intel Macs.
@@ -19,7 +35,7 @@ xcode-select --install
 Clone the repository with its Neovim submodule:
 
 ```bash
-git clone --resurse-submodules https://github.com/koutaroyumiba/dotfiles.git "HOME/dotfiles"
+git clone --resurse-submodules https://github.com/koutaroyumiba/dotfiles.git "$HOME/dotfiles"
 
 cd "$HOME/dotfiles"
 ```
@@ -67,6 +83,15 @@ macos
 verify
 ```
 
+## Manual Follow-up
+
+Some settings remain manual:
+
+- swap Caps Lock and Control if desired;
+- disable Spotlight shortcuts that conflict with Raycast;
+- sign in to applications;
+- configure SSH keys and Git identity;
+
 ## Ownership
 
 Just general conventions that I'm kinda figuring out while going through my dotfiles and configurations.
@@ -102,15 +127,6 @@ Global defaults are declared in `configs/mise/config.toml`
 ### Configuration Links
 
 `installers/links.sh` creates explicit absolute symlinks from the repository into the home directory. GNU stow is not required.
-
-## Manual Follow-up
-
-Some settings remain manual:
-
-- swap Caps Lock and Control if desired;
-- disable Spotlight shortcuts that conflict with Raycast;
-- sign in to applications;
-- configure SSH keys and Git identity;
 
 ## Safety
 

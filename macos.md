@@ -1,10 +1,3 @@
-# New Mac Setup
-
-A checklist for setting up a new personal Mac with my preferred configuration.
-
-## Overview
-
-The target setup at a glance:
 
 - **Browser:** Helium
 - **Launcher:** Raycast
