@@ -31,6 +31,9 @@ The project follows [Semantic Versioning](./VERSIONING.md). Versions marked **Un
 - Retained TPM for `vim-tmux-navigator`, `tmux-resurrect`, `tmux-continuum`, `tmux-sensible`, and `tmux-yank`; setup now installs missing plugins non-interactively.
 - Kept `configs/claude` as archived reference material rather than linking it into `~/.claude`.
 - Updated the active Pi configuration paths to `configs/pi`.
+- Added a `bin/setup` entry point for running `setup` from any directory after the initial bootstrap.
+- Setup now rejects unknown or malformed `--only` and `--skip` step lists.
+- Optional macOS preferences no longer cause verification to fail when they are skipped.
 
 ### Safety
 

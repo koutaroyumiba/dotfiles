@@ -145,18 +145,17 @@ fi
 
 tmux -L "$verify_socket" kill-server >/dev/null 2>&1 || true
 
+# macOS preferences are optional and may be skipped during setup.
 if [[ "$(defaults read com.apple.dock autohide 2>/dev/null)" == "1" ]]; then
   success "Dock autohide is enabled."
 else
-  warn "Dock autohide is not enabled."
-  ((failures += 1))
+  warn "Optional Dock autohide preference is not enabled."
 fi
 
 if [[ "$(defaults read com.apple.dock expose-group-apps 2>/dev/null)" == "1" ]]; then
   success "Dock application grouping is enabled."
 else
-  warn "Dock application grouping is not enabled."
-  ((failures += 1))
+  warn "Optional Dock application grouping preference is not enabled."
 fi
 
 # verification finished

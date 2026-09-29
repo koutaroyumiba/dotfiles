@@ -28,7 +28,7 @@ INSTALLERS=(
 
 usage() {
   cat <<"USAGE"
-Usage: ./setup [options]
+Usage: setup [options]
 
 Options:
   --dry-run       Print changes without applying them
@@ -62,6 +62,32 @@ list_steps() {
   printf "%s\n" "${INSTALLERS[@]}"
 }
 
+step_exists() {
+  local expected="$1"
+  local name
+
+  for name in "${INSTALLERS[@]}"; do
+    [[ "$name" == "$expected" ]] && return 0
+  done
+
+  return 1
+}
+
+validate_step_list() {
+  local option="$1"
+  local csv_list="$2"
+  local item
+  local IFS=","
+
+  case "$csv_list" in
+    ,*|*,|*,,*) fail "$option requires a comma-separated list of step names" ;;
+  esac
+
+  for item in $csv_list; do
+    step_exists "$item" || fail "Unknown setup step for $option: $item"
+  done
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --dry-run|--dry)
@@ -73,13 +99,13 @@ while [[ $# -gt 0 ]]; do
       exit 0
       ;;
     --only)
-      [[ $# -ge 2 ]] || fail "--only requires a comma-separated value"
+      [[ $# -ge 2 && -n "$2" ]] || fail "--only requires a comma-separated value"
       only_steps="$2"
       # shift consumes the argument (shift all arguments by one)
       shift
       ;;
     --skip)
-      [[ $# -ge 2 ]] || fail "--skip requires a comma-separated value"
+      [[ $# -ge 2 && -n "$2" ]] || fail "--skip requires a comma-separated value"
       skipped_steps="$2"
       shift
       ;;
@@ -97,6 +123,9 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
+
+[[ -z "$only_steps" ]] || validate_step_list "--only" "$only_steps"
+[[ -z "$skipped_steps" ]] || validate_step_list "--skip" "$skipped_steps"
 
 if [[ "$DRY_RUN" != "1" ]] && ! confirm "Run the dotfiles setup?"; then
   info "Setup cancelled."

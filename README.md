@@ -56,19 +56,30 @@ Setup asks for confirmation before making changes. Pass `--yes` to bypass confir
 
 Setup never overwrites conflicting dotfiles automatically. If a target already exists, the link installer reports every conflict and exits before creating anything.
 
+### Initial versus later runs
+
+Use `./setup` from the repository root for the initial bootstrap. At that point, `~/bin` and the shell `PATH` may not be configured yet.
+
+The initial setup links this repository's `bin/` directory to `~/bin`. After opening a new terminal, run `setup` from any directory:
+
+```bash
+setup --help
+setup --only packages
+```
+
 ## Usage
 
 ```bash
-./setup --help
-./setup --list
-./setup --dry-run
-./setup --only packages
-./setup --only links,shell
-./setup --skip macos
-./setup --yes
+setup --help
+setup --list
+setup --dry-run
+setup --only packages
+setup --only links,shell
+setup --skip macos
+setup --yes
 ```
 
-Informational and dry-run commands do not prompt for confirmation. Multiple values passed to `--only` or `--skip` are comma-separated.
+Informational and dry-run commands do not prompt for confirmation. Multiple values passed to `--only` or `--skip` are comma-separated, and unknown step names are rejected.
 
 The setup stages run in this order:
 
