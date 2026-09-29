@@ -35,7 +35,7 @@ xcode-select --install
 Clone the repository with its Neovim submodule:
 
 ```bash
-git clone --resurse-submodules https://github.com/koutaroyumiba/dotfiles.git "$HOME/dotfiles"
+git clone --recurse-submodules https://github.com/koutaroyumiba/dotfiles.git "$HOME/dotfiles"
 
 cd "$HOME/dotfiles"
 ```
