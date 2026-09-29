@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+SCRIPT_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE[@]}")" && pwd)"
+exec "$SCRIPT_DIR/../setup" "$@"
