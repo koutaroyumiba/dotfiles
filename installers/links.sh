@@ -72,6 +72,7 @@ for mapping in "${DOTFILE_LINKS[@]}"; do
     continue
   fi
 
+  success "Creating a symlink: $source_path -> $target"
   run mkdir -p "$(dirname "$target")"
   run ln -s "$source_path" "$target"
 done
