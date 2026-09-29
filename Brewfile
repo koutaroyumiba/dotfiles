@@ -14,6 +14,4 @@ brew "wget"
 
 cask "nikitabobko/tap/aerospace"
 cask "font-iosevka-term-nerd-font"
-cask "obsidian"
-cask "raycast"
 cask "wezterm"

@@ -104,6 +104,9 @@ Some settings remain manual:
 - disable Spotlight shortcuts that conflict with Raycast;
 - sign in to applications;
 - configure SSH keys and Git identity;
+- install helium (browser)
+- install obsidian (note taking)
+- install raycast (better spotlight)
 
 ## Ownership
 
@@ -115,26 +118,23 @@ Homebrew manages machine-level command-line tools and graphical applications dec
 
 Examples include:
 
-- Git
-- Neovim
-- tmux
-- Wezterm
-- Aerospace
-- Raycast
-- Obsidian
+- Neovim, Git, tmux, ripgrep, fd, and fzf.
+- Compilers and native libraries such as OpenSSL and SQLite.
+- Services such as PostgreSQL.
 - Iosevka Term Nerd Font (best font btw)
 
 ### Mise
 
 mise is installed independently through `https://mise.run`, not Homebrew (cuz the docs told me to).
 
-mise manages:
+`mise` owns language runtimes and development tools whose versions may differ by project.
 
-- Node LTS
-- `pnpm`
-- Go
-- Lua
-- Zig
+Examples include:
+
+- Node.js, Go, Lua and Zig.
+- Terraform.
+- Bun and Deno.
+- pnpm and similar language-ecosystem package managers.
 
 `npm` is included with Node. The mise installer uses `npm` to install Pi globally.
 
