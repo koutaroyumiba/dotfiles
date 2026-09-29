@@ -153,3 +153,17 @@ The bootstrap system:
 - does not overwrite files or directories;
 - does not manage secrets and auth states;
 - prompts before changing the login shell or macOS preferences;
+
+## Version History
+
+This repository uses [Semantic Versioning](./VERSIONING.md).
+
+### v2.0.0 — Current release
+
+A redesigned macOS bootstrap system with a modular setup runner, conflict-safe symlink management without GNU Stow, clearer Homebrew and mise ownership, reorganized configuration, and improved verification and documentation.
+
+See [CHANGELOG.md](./CHANGELOG.md) for full release details.
+
+### v1.0.0 — Initial implementation
+
+The initial collection of personal dotfiles and scripts, using a manual macOS setup process and GNU Stow for symlink management.

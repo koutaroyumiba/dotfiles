@@ -2,56 +2,28 @@
 
 Notable changes to this project are documented in this file.
 
-The project follows [Semantic Versioning](./VERSIONING.md). Versions marked **Unreleased** are complete release candidates that have not yet been tagged.
+The project follows [Semantic Versioning](./VERSIONING.md). Versions marked **Unreleased** describe planned or in-progress work and may change before release.
 
-## [2.0.0] - Unreleased
-
-**Status:** Implementation complete; pending final release and Git tag.
-
-### Added
-
-- Added a modular macOS setup runner with ordered installers, selective execution, confirmation handling, and dry-run support.
-- Added a repository-owned, conflict-safe symlink installer with an explicit macOS link manifest.
-- Added standalone mise management for Node LTS, pnpm, Go, Lua and Zig.
-- Added installation of Pi through npm provided by mise-managed Node.
-- Added automatic Git submodule initialization.
-- Added shell setup for Bash, Zsh, Oh My Zsh, portable aliases, and unmanaged machine-local aliases.
-- Added TPM and tmux plugin installation with isolated configuration validation.
-- Added optional Dock preference configuration with explicit confirmation.
-- Added comprehensive verification for commands, runtimes, links, submodules, shell syntax, tmux plugins, tmux configuration, and macOS preferences.
+## [2.0.0] - 2026-09-30
 
 ### Changed
 
-- Reorganized reusable configuration beneath `configs/` and managed executables beneath `bin/`.
-- Moved the Neovim submodule to `configs/nvim` and changed its public URL to HTTPS.
-- Linked the complete repository-owned `bin/` directory to `~/bin`.
-- Made `.bashrc` shared by Bash and Zsh while keeping login and shell-specific setup separate.
-- Assigned machine-level tools and applications to Homebrew and language runtimes to standalone mise.
-- Replaced Volta-managed Node, npm, pnpm, and Pi with mise-managed Node and npm-installed Pi.
-- Retained TPM for `vim-tmux-navigator`, `tmux-resurrect`, `tmux-continuum`, `tmux-sensible`, and `tmux-yank`; setup now installs missing plugins non-interactively.
-- Kept `configs/claude` as archived reference material rather than linking it into `~/.claude`.
-- Updated the active Pi configuration paths to `configs/pi`.
-- Added a `bin/setup` entry point for running `setup` from any directory after the initial bootstrap.
-- Setup now rejects unknown or malformed `--only` and `--skip` step lists.
-- Optional macOS preferences no longer cause verification to fail when they are skipped.
-
-### Safety
-
-- Link validation checks the complete manifest before creating anything.
-- Existing files, directories, and unexpected symlinks are never overwritten automatically.
-- Parent-directory conflicts are detected before link creation.
-- Dry runs print commands without mutating the machine.
-- Local aliases, authentication, sessions, caches, and application runtime state remain unmanaged.
-- macOS preferences and login-shell changes require confirmation.
+- Replace the Stow-based workflow with a repository-owned, conflict-safe symlink installer and explicit link manifest.
+- Add a modular macOS setup runner with ordered steps, selective execution, confirmation handling, and dry-run support.
+- Define a clear ownership boundary: Homebrew manages system software and applications, while standalone mise manages language runtimes and development tools.
+- Reorganize reusable configuration under `configs/` and managed scripts under `bin/`.
+- Use `.bashrc` as shared Bash/Zsh configuration while keeping shell-specific setup separate.
+- Initialize Git submodules as part of setup and make public bootstrap dependencies available over HTTPS.
+- Replace TPM-managed tmux plugins with a dependency-free tmux configuration, accepting the documented feature tradeoffs.
+- Add optional macOS preference configuration and comprehensive installation verification.
+- Improve safety, idempotency, documentation, and testing for fresh-machine bootstrap.
 
 ### Breaking changes
 
-- GNU Stow is no longer part of the setup workflow.
-- Managed configuration locations and symlink targets have changed.
-- `~/bin` is now owned as a single repository-linked directory.
-- Language-runtime ownership moves from Volta to standalone mise.
-- Pi moves from a Volta-managed installation to npm under mise-managed Node.
-- Shell startup files are now repository-managed links, with machine-specific aliases moved to `~/.bash_aliases_local`.
+- GNU Stow is no longer part of the intended setup workflow.
+- Existing configuration locations and symlink targets may change.
+- Tool ownership changes, including moving language runtimes to mise.
+- Some tmux plugin features, including automatic session restoration, are removed from the default configuration.
 
 ## [1.0.0] - Initial implementation
 
