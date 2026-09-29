@@ -20,7 +20,7 @@ INSTALLERS=(
   submodules
   links
   shell
-  node
+  mise
   tmux
   macos
   verify
@@ -64,7 +64,7 @@ list_steps() {
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --dry-run)
+    --dry-run|--dry)
       DRY_RUN=1
       export DRY_RUN
       ;;
