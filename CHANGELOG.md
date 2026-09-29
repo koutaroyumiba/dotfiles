@@ -12,7 +12,7 @@ The project follows [Semantic Versioning](./VERSIONING.md). Versions marked **Un
 
 - Added a modular macOS setup runner with ordered installers, selective execution, confirmation handling, and dry-run support.
 - Added a repository-owned, conflict-safe symlink installer with an explicit macOS link manifest.
-- Added standalone mise management for Node LTS and pnpm.
+- Added standalone mise management for Node LTS, pnpm, Go, Lua and Zig.
 - Added installation of Pi through npm provided by mise-managed Node.
 - Added automatic Git submodule initialization.
 - Added shell setup for Bash, Zsh, Oh My Zsh, portable aliases, and unmanaged machine-local aliases.

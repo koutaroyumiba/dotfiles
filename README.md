@@ -119,6 +119,9 @@ mise manages:
 
 - Node LTS
 - `pnpm`
+- Go
+- Lua
+- Zig
 
 `npm` is included with Node. The mise installer uses `npm` to install Pi globally.
 

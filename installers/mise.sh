@@ -55,3 +55,6 @@ fi
 "$mise_command" exec -- npm --version
 "$mise_command" exec -- pnpm --version
 "$mise_command" exec -- pi --version
+"$mise_command" exec -- go version
+"$mise_command" exec -- lua -v
+"$mise_command" exec -- zig version

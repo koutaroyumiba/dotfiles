@@ -51,6 +51,22 @@ if [[ -x "$mise_command" ]]; then
       ((failures += 1))
     fi
   done
+
+  for runtime_command in go zig; do
+    if "$mise_command" exec -- "$runtime_command" version >/dev/null 2>&1; then
+      success "Found mise-managed command: $runtime_command"
+    else
+      warn "Missing mise-managed command: $runtime_command"
+      ((failures += 1))
+    fi
+  done
+
+  if "$mise_command" exec -- lua -v >/dev/null 2>&1; then
+    success "Found mise-managed command: lua"
+  else
+    warn "Missing mise-managed command: lua"
+    ((failures += 1))
+  fi
 fi
 
 # symlink verification
