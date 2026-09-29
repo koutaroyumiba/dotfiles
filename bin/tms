@@ -1,0 +1,305 @@
+#!/usr/bin/env bash
+
+set -o nounset
+set -o pipefail
+
+readonly TMS_VERSION="0.1.0"
+
+# Project roots to include in the picker. Add ":N" to search N levels deep.
+readonly TMS_CONFIG=(
+  "$HOME/dotfiles:0"
+  "$HOME/workspace:1"
+  "$HOME/dev:2"
+)
+readonly TMS_DEFAULT_DEPTH=1
+readonly TMS_INCLUDE_ROOTS=true
+readonly TMS_SHOW_HIDDEN=false
+
+usage() {
+  cat <<'EOF'
+Usage: tms [OPTIONS] [DIRECTORY]
+
+Select a project or existing tmux session. When DIRECTORY is provided, skip
+fzf and open that project directly.
+
+Options:
+  -h, --help       Show this help message
+  -v, --version    Show the version
+EOF
+}
+
+fail() {
+  printf 'tms: %s\n' "$*" >&2
+  exit 1
+}
+
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+normalize_path() {
+  local path="$1"
+
+  case "$path" in
+    "~") path="$HOME" ;;
+    "~/"*) path="$HOME/${path#\~/}" ;;
+  esac
+
+  [[ -d "$path" ]] || return 1
+  (cd "$path" 2>/dev/null && pwd -P)
+}
+
+parse_search_entry() {
+  local entry="$1"
+  local path="$entry"
+  local depth="$TMS_DEFAULT_DEPTH"
+
+  if [[ "$entry" =~ ^(.*):([0-9]+)$ ]]; then
+    path="${BASH_REMATCH[1]}"
+    depth="${BASH_REMATCH[2]}"
+  fi
+
+  case "$path" in
+    "~") path="$HOME" ;;
+    "~/"*) path="$HOME/${path#\~/}" ;;
+  esac
+
+  printf '%s\t%s\n' "$path" "$depth"
+}
+
+list_projects() {
+  local entry parsed root depth
+
+  for entry in "${TMS_CONFIG[@]}"; do
+    parsed="$(parse_search_entry "$entry")"
+    root="${parsed%%$'\t'*}"
+    depth="${parsed#*$'\t'}"
+
+    root="$(normalize_path "$root")" || continue
+
+    if [[ "$TMS_INCLUDE_ROOTS" == true ]]; then
+      printf '%s\n' "$root"
+    fi
+
+    # A depth of zero includes only the configured root itself.
+    if [[ "$depth" == 0 ]]; then
+      continue
+    fi
+
+    if [[ "$TMS_SHOW_HIDDEN" == true ]]; then
+      find "$root" -mindepth 1 -maxdepth "$depth" \
+        -name .git -prune -o -type d -print 2>/dev/null
+    else
+      find "$root" -mindepth 1 -maxdepth "$depth" \
+        \( -name .git -o -name '.*' \) -prune -o -type d -print 2>/dev/null
+    fi
+  done | sort -u
+}
+
+list_sessions() {
+  tmux list-sessions -F '#{session_name}' 2>/dev/null || true
+}
+
+display_path() {
+  local path="$1"
+
+  case "$path" in
+    "$HOME") printf '~\n' ;;
+    "$HOME"/*) printf '~/%s\n' "${path#"$HOME"/}" ;;
+    *) printf '%s\n' "$path" ;;
+  esac
+}
+
+build_picker_records() {
+  local session project
+
+  while IFS= read -r session; do
+    [[ -n "$session" ]] || continue
+    printf 'session\t%s\t[session] %s\n' "$session" "$session"
+  done < <(list_sessions)
+
+  while IFS= read -r project; do
+    [[ -n "$project" ]] || continue
+    printf 'project\t%s\t[project] %s\n' "$project" "$(display_path "$project")"
+  done < <(list_projects)
+}
+
+pick_target() {
+  local preview
+
+  command_exists fzf || fail "fzf is required when no directory is provided"
+
+  preview='type="$1"; value="$2"; if [ "$type" = session ]; then tmux list-windows -t "=$value" -F "#{window_index}: #{window_name} (#{window_panes} panes)" 2>/dev/null; elif command -v tree >/dev/null 2>&1; then tree -C -L 2 "$value" 2>/dev/null; else ls -la "$value" 2>/dev/null; fi'
+
+  build_picker_records | fzf \
+    --delimiter=$'\t' \
+    --with-nth=3.. \
+    --reverse \
+    --border=rounded \
+    --border-label=' tms ' \
+    --border-label-pos=center \
+    --prompt='  ' \
+    --pointer='▶' \
+    --header='enter: open / switch session' \
+    --preview="bash -c '$preview' _ {1} {2}" \
+    --preview-window='right,55%,border-left'
+}
+
+sanitize_session_name() {
+  local name="$1"
+
+  name="$(printf '%s' "$name" | sed \
+    -e 's/[^[:alnum:]_-]/_/g' \
+    -e 's/__*/_/g' \
+    -e 's/^_*//' \
+    -e 's/_*$//')"
+
+  [[ -n "$name" ]] || return 1
+  printf '%s\n' "$name"
+}
+
+path_hash() {
+  local path="$1"
+
+  if command_exists shasum; then
+    printf '%s' "$path" | shasum | cut -c1-6
+  elif command_exists sha256sum; then
+    printf '%s' "$path" | sha256sum | cut -c1-6
+  else
+    printf '%s' "$path" | cksum | awk '{ print $1 }' | cut -c1-6
+  fi
+}
+
+session_exists() {
+  tmux has-session -t "=$1" 2>/dev/null
+}
+
+session_project_path() {
+  local session="$1"
+  local path
+
+  path="$(tmux show-options -qv -t "=$session" @tms_path 2>/dev/null)"
+  if [[ -n "$path" ]]; then
+    printf '%s\n' "$path"
+    return 0
+  fi
+
+  tmux display-message -p -t "=$session" '#{pane_current_path}' 2>/dev/null
+}
+
+session_name_for_path() {
+  local project="$1"
+  local base session existing_path hash
+
+  base="$(basename "$project")"
+  session="$(sanitize_session_name "$base")" || fail "cannot derive a session name from: $project"
+
+  if ! session_exists "$session"; then
+    printf '%s\n' "$session"
+    return 0
+  fi
+
+  existing_path="$(session_project_path "$session" || true)"
+  existing_path="$(normalize_path "$existing_path" || true)"
+  if [[ "$existing_path" == "$project" ]]; then
+    printf '%s\n' "$session"
+    return 0
+  fi
+
+  hash="$(path_hash "$project")"
+  session="${session}_${hash}"
+
+  if session_exists "$session"; then
+    existing_path="$(session_project_path "$session" || true)"
+    existing_path="$(normalize_path "$existing_path" || true)"
+    [[ "$existing_path" == "$project" ]] || fail "session name collision: $session"
+  fi
+
+  printf '%s\n' "$session"
+}
+
+create_project_session() {
+  local project="$1"
+  local session="$2"
+
+  if session_exists "$session"; then
+    return 0
+  fi
+
+  tmux new-session -d -s "$session" -c "$project" ||
+    fail "could not create session: $session"
+  tmux set-option -q -t "=$session" @tms_path "$project"
+}
+
+switch_or_attach() {
+  local session="$1"
+
+  if [[ -n ${TMUX:-} ]]; then
+    tmux switch-client -t "=$session"
+  else
+    tmux attach-session -t "=$session"
+  fi
+}
+
+open_project() {
+  local requested_path="$1"
+  local project session
+
+  project="$(normalize_path "$requested_path")" || fail "not a directory: $requested_path"
+  session="$(session_name_for_path "$project")"
+  create_project_session "$project" "$session"
+  switch_or_attach "$session"
+}
+
+main() {
+  local requested_path=""
+  local selection type value _label
+
+  while (($# > 0)); do
+    case "$1" in
+      -h | --help)
+        usage
+        return 0
+        ;;
+      -v | --version)
+        printf 'tms %s\n' "$TMS_VERSION"
+        return 0
+        ;;
+      --)
+        shift
+        (($# <= 1)) || fail "expected at most one directory"
+        requested_path="${1:-}"
+        break
+        ;;
+      -*)
+        fail "unknown option: $1"
+        ;;
+      *)
+        [[ -z "$requested_path" ]] || fail "expected at most one directory"
+        requested_path="$1"
+        ;;
+    esac
+    shift
+  done
+
+  command_exists tmux || fail "tmux is not installed"
+
+  if [[ -n "$requested_path" ]]; then
+    open_project "$requested_path"
+    return
+  fi
+
+  selection="$(pick_target)" || return 0
+  [[ -n "$selection" ]] || return 0
+  IFS=$'\t' read -r type value _label <<< "$selection"
+
+  case "$type" in
+    session) switch_or_attach "$value" ;;
+    project) open_project "$value" ;;
+    *) fail "invalid picker selection" ;;
+  esac
+}
+
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  main "$@"
+fi
