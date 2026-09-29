@@ -52,6 +52,8 @@ Run it:
 ./setup
 ```
 
+Setup asks for confirmation before making changes. Pass `--yes` to bypass confirmation prompts.
+
 Setup never overwrites conflicting dotfiles automatically. If a target already exists, the link installer reports every conflict and exits before creating anything.
 
 ## Usage
@@ -66,7 +68,7 @@ Setup never overwrites conflicting dotfiles automatically. If a target already e
 ./setup --yes
 ```
 
-Multiple values passed to `--only` or `--skip` are comma-separated.
+Informational and dry-run commands do not prompt for confirmation. Multiple values passed to `--only` or `--skip` are comma-separated.
 
 The setup stages run in this order:
 

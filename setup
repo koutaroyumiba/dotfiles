@@ -98,6 +98,11 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+if [[ "$DRY_RUN" != "1" ]] && ! confirm "Run the dotfiles setup?"; then
+  info "Setup cancelled."
+  exit 0
+fi
+
 info "Dotfiles directory: $DOTFILES_DIR"
 [[ "$DRY_RUN" == "1" ]] && warn "Dry-run mode is enabled"
 
